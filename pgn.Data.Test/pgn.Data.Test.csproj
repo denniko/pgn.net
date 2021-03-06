@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../pgn.Data/pgn.Data.csproj" />
+    <ProjectReference Include="..\pgn.NET\pgn.NET.csproj" />
   </ItemGroup>
 
 </Project>

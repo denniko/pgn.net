@@ -3,7 +3,7 @@
 namespace ilf.pgn.Data
 {
     /// <summary>
-    /// Represents a board setup. This is used in position practices or non-standard chess variants like Chess960
+    /// Represents a board state. This is used in position practices or non-standard chess variants like Chess960
     /// </summary>
     public class BoardSetup
     {
@@ -188,6 +188,27 @@ namespace ilf.pgn.Data
                 return str.ToUpper();
 
             return str;
+        }
+
+        public BoardSetup Clone()
+        {
+            var b = new BoardSetup();
+            b.CanBlackCastleKingSide = this.CanBlackCastleKingSide;
+            b.CanBlackCastleQueenSide = this.CanBlackCastleQueenSide;
+            b.CanWhiteCastleKingSide = this.CanWhiteCastleKingSide;
+            b.CanWhiteCastleQueenSide = this.CanWhiteCastleQueenSide;
+            b.EnPassantSquare = this.EnPassantSquare;
+            b.FullMoveCount = this.FullMoveCount;
+            b.HalfMoveClock = this.HalfMoveClock;
+            b.IsWhiteMove = this.IsWhiteMove;
+            for (int i=0;i<b._board.Length;i++)
+            {
+                for (int j = 0; j<b._board.GetLength(1); j++)
+                {
+                    b._board[i, j] = this._board[i, j];
+                }
+            }
+            return b;
         }
     }
 }
