@@ -29,6 +29,7 @@ namespace pgn.Data.Test
 
             // Get the first game from the file and print it to the console.
             var game = gameDb.Games[0];
+            var board = game.GoToMove(10, true);
             Console.WriteLine(game);
         }
     }

@@ -7,12 +7,12 @@ namespace pgn.Data
 {
     public static class GameExtension
     {
-        public static BoardSetup GoToMove(this Game game, int num, bool white)
+        public static BoardSetup GoToMove(this Game game, int halfmove)
         {
             var board = game.BoardSetup.Clone();
-            foreach (var move in game.MoveText)
+            foreach (var move in game.MoveText.GetMoves())
             {
-                
+               
             }
 
             return board;
