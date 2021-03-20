@@ -39,7 +39,7 @@ namespace ilf.pgn.Data.Test
             var sut = new BoardSetup();
             sut[32] = Piece.BlackKnight;
 
-            Assert.Equal(Piece.BlackKnight, sut[File.A, 5]);
+            Assert.Equal(Piece.BlackKnight, sut[File.A, 4]);
         }
 
         [Fact]
@@ -52,11 +52,11 @@ namespace ilf.pgn.Data.Test
             sut[36] = Piece.WhiteQueen;
             sut[63] = Piece.BlackBishop;
 
-            Assert.Equal(Piece.BlackPawn, sut[File.A, 1]);
-            Assert.Equal(Piece.WhiteKing, sut[File.B, 1]);
-            Assert.Equal(Piece.BlackRook, sut[File.D, 8]);
-            Assert.Equal(Piece.WhiteQueen, sut[File.E, 5]);
-            Assert.Equal(Piece.BlackBishop, sut[File.H, 8]);
+            Assert.Equal(Piece.BlackPawn, sut[File.A, 8]);
+            Assert.Equal(Piece.WhiteKing, sut[File.B, 8]);
+            Assert.Equal(Piece.BlackRook, sut[File.D, 1]);
+            Assert.Equal(Piece.WhiteQueen, sut[File.E, 4]);
+            Assert.Equal(Piece.BlackBishop, sut[File.H, 1]);
         }
     }
 }

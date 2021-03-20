@@ -56,7 +56,7 @@ namespace ilf.pgn.Data
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="Piece"/> at the specified position. Counting starts at A1 rank-wise. 0=A1, 1=B1, ..., 7=H1, 8=A2, ..., 64=H8
+        /// Gets or sets the <see cref="Piece"/> at the specified position. Counting starts at A8 rank-wise. 0=A8, 1=B8, ..., 7=H1, 8=A2, ..., 64=H8
         /// </summary>
         /// <value>
         /// The <see cref="Piece"/>. Use <c>null</c> to unset.
@@ -65,8 +65,8 @@ namespace ilf.pgn.Data
         /// <returns>The piece at the specified square or <c>null</c> if the square is empty.</returns>
         public Piece this[int pos]
         {
-            get { return this[pos % 8, pos / 8]; }
-            set { this[pos % 8, pos / 8] = value; }
+            get { return this[pos % 8, 7 - pos / 8]; }
+            set { this[pos % 8, 7 - pos / 8] = value; }
         }
 
         /// <summary>

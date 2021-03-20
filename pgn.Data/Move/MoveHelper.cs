@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace ilf.pgn.Data
 {
     public static class MoveHelper
     {
-        static bool CheckPawnMoveAndApply(Move move, BoardSetup board)
+        public static Move ValidatePawnMove(Move move, BoardSetup board)
         {
             var file = move.TargetSquare.File;
-            var fileInt = (int)file;
             var rank = move.TargetSquare.Rank;
             Color color = board.IsWhiteMove ? Color.White : Color.Black;
             int direction = color == Color.White ? 1 : -1;
@@ -19,29 +18,82 @@ namespace ilf.pgn.Data
                 && move.PromotedPiece != PieceType.Pawn);
             var isCorrectPawnArea = color == Color.White && rank >= 2 && rank <= 8
                 || color == Color.Black && rank >= 1 && rank <= 7;
+            var result = move.Clone();
             if (move.Type == MoveType.Simple)
-            {              
-                bool isCorrect = targetPiece == null && ppc && isCorrectPawnArea
-                    && (board[file, rank - direction]?.PieceType == PieceType.Pawn
-                    && board[file, rank - direction]?.Color == color)
-                    || (board[file, rank - direction] == null
-                    && board[file, rank - 2 * direction]?.PieceType == PieceType.Pawn
-                    && board[file, rank - 2 * direction]?.Color == color
-                    && rank - 2 * direction == pawnLine);
-            } 
+            {
+                if (targetPiece == null && ppc && isCorrectPawnArea == false)
+                    throw new InvalidOperationException();
+                if (board[file, rank - direction]?.PieceType == PieceType.Pawn && board[file, rank - direction]?.Color == color)
+                {
+                    result.OriginFile = file;
+                    result.OriginRank = rank - direction;
+                    result.OriginSquare = new Square(result.OriginFile.Value, result.OriginRank.Value);
+                    return result;
+                }
+                else if (board[file, rank - direction] == null && board[file, rank - 2 * direction]?.PieceType == PieceType.Pawn
+                    && board[file, rank - 2 * direction]?.Color == color && rank - 2 * direction == pawnLine)
+                {
+                    result.OriginFile = file;
+                    result.OriginRank = rank - 2 * direction;
+                    result.OriginSquare = new Square(result.OriginFile.Value, result.OriginRank.Value);
+                    return result;
+                }
+            }
             else if (move.Type == MoveType.Capture)
             {
-                return ppc && targetPiece != null && color != targetPiece.Color
-                    && isCorrectPawnArea
-                    && (fileInt > 1 && board[fileInt - 1, rank - 1]?.Color == color 
-                    && board[fileInt - 1, rank - 1]?.PieceType == PieceType.Pawn                   
-                    || fileInt < 8 && board[fileInt + 1, rank - 1]?.Color == color
-                    && board[fileInt + 1, rank - 1]?.PieceType == PieceType.Pawn);
-            } else if (move.Type == MoveType.CaptureEnPassant)
+                if (ppc && targetPiece != null && color != targetPiece.Color && isCorrectPawnArea && move.OriginFile.HasValue == false)
+                    throw new InvalidOperationException();
+                if (board[move.OriginFile.Value, rank - direction]?.Color == color
+                    && board[move.OriginFile.Value, rank - direction]?.PieceType == PieceType.Pawn)
+                {
+                    result.OriginRank = rank - direction;
+                    result.OriginSquare = new Square(result.OriginFile.Value, result.OriginRank.Value);
+                    return result;
+                }
+            }
+            else if (move.Type == MoveType.CaptureEnPassant)
             {
                 throw new NotImplementedException();
             }
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("No piece can make this move");
+        }
+
+        public static Move ValidateKnightMove(Move move, BoardSetup board)
+        {
+            var rank = move.TargetSquare.Rank;
+            var ifile = (int)move.TargetSquare.File;
+            Color color = board.IsWhiteMove ? Color.White : Color.Black;
+            var targetPieceNotKing = board[move.TargetSquare]?.PieceType != PieceType.King;
+            Square original = null;
+            for (int f = 0; f < 8; f++)
+            {
+                for (int r = 0; r < 8; r++)
+                {
+                    if (board[f, r]?.PieceType == PieceType.Knight && board[f, r]?.Color == color
+                        && Math.Abs(Math.Abs(ifile - f) - Math.Abs(rank - r)) == 1 && targetPieceNotKing
+                        && (move.OriginRank == null || move.OriginRank == r)
+                        && (move.OriginFile == null || move.OriginFile == (File)f))
+                    {
+                        if (original == null)
+                        {
+                            original = new Square((File)(f + 1), r + 1);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("More than one piece can make a given move");
+                        }
+                    }
+                }
+            }
+            if (original != null)
+            {
+                var result = move.Clone();
+                result.OriginSquare = original;
+                result.OriginFile = original.File;
+                result.OriginRank = original.Rank;
+                return result;
+            }
+            throw new InvalidOperationException("No piece can make this move");
         }
     }
 }

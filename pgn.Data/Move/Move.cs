@@ -173,5 +173,25 @@ namespace ilf.pgn.Data
         {
             return MoveFormatter.Default.Format(this);
         }
+
+        public Move Clone()
+        {
+            return new Move
+            {
+                Type = this.Type,
+                Annotation = this.Annotation,
+                IsCheck = this.IsCheck,
+                IsCheckMate = this.IsCheckMate,
+                IsDoubleCheck = this.IsDoubleCheck,
+                OriginFile = this.OriginFile,
+                OriginRank = this.OriginRank,
+                OriginSquare = this.OriginSquare,
+                Piece = this.Piece,
+                PromotedPiece = this.PromotedPiece,
+                TargetFile = this.TargetFile,
+                TargetPiece = this.TargetPiece,
+                TargetSquare = this.TargetSquare
+            };
+        }
     }
 }

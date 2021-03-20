@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Xunit;
 
 namespace pgn.Data.Test
@@ -28,8 +28,8 @@ namespace pgn.Data.Test
             var gameDb = reader.ReadFromString(TestGameString);
 
             // Get the first game from the file and print it to the console.
-            var game = gameDb.Games[0];
-            var board = game.GoToMove(10, true);
+            var game = gameDb.Games.First();
+            var board = game.GoToMove();
             Console.WriteLine(game);
         }
     }
