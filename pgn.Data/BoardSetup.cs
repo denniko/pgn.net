@@ -201,7 +201,7 @@ namespace ilf.pgn.Data
             b.FullMoveCount = this.FullMoveCount;
             b.HalfMoveClock = this.HalfMoveClock;
             b.IsWhiteMove = this.IsWhiteMove;
-            for (int i=0;i<b._board.Length;i++)
+            for (int i=0;i<b._board.GetLength(0); i++)
             {
                 for (int j = 0; j<b._board.GetLength(1); j++)
                 {

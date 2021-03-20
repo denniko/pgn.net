@@ -43,7 +43,7 @@ namespace ilf.pgn.Data.Format.Test
         {
             var sut = new Formatter();
             var writer = new StringWriter();
-            writer.NewLine = "\n";
+            //writer.NewLine = "\n";
             sut.Format(_testGame, writer);
             Assert.Equal(TestGameString, writer.ToString());
         }
@@ -52,7 +52,8 @@ namespace ilf.pgn.Data.Format.Test
         public void Format_should_format_correctly()
         {
             var sut = new Formatter();
-            Assert.Equal(TestGameString, sut.Format(_testGame));
+            var res = sut.Format(_testGame);
+            Assert.Equal(TestGameString, res);
         }
     }
 }
