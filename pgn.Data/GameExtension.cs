@@ -36,6 +36,8 @@ namespace pgn.Data
                     return MoveHelper.ValidatePawnMove(move, board);
                 case PieceType.Knight:
                     return MoveHelper.ValidateKnightMove(move, board);
+                case PieceType.Bishop:
+                    return MoveHelper.ValidateBishopMove(move, board);
                 default:
                     return null;
             }

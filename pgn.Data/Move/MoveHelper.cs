@@ -60,8 +60,8 @@ namespace ilf.pgn.Data
 
         public static Move ValidateKnightMove(Move move, BoardSetup board)
         {
-            var rank = move.TargetSquare.Rank;
-            var ifile = (int)move.TargetSquare.File;
+            var rank = move.TargetSquare.Rank - 1;
+            var ifile = (int)move.TargetSquare.File - 1;
             Color color = board.IsWhiteMove ? Color.White : Color.Black;
             var targetPieceNotKing = board[move.TargetSquare]?.PieceType != PieceType.King;
             Square original = null;
@@ -71,10 +71,63 @@ namespace ilf.pgn.Data
                 {
                     if (board[f, r]?.PieceType == PieceType.Knight && board[f, r]?.Color == color
                         && Math.Abs(Math.Abs(ifile - f) - Math.Abs(rank - r)) == 1 && targetPieceNotKing
-                        && (move.OriginRank == null || move.OriginRank == r)
-                        && (move.OriginFile == null || move.OriginFile == (File)f))
+                        && (move.OriginRank == null || move.OriginRank == (r + 1))
+                        && (move.OriginFile == null || move.OriginFile == (File)(f + 1)))
                     {
                         if (original == null)
+                        {
+                            original = new Square((File)(f + 1), r + 1);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("More than one piece can make a given move");
+                        }
+                    }
+                }
+            }
+            if (original != null)
+            {
+                var result = move.Clone();
+                result.OriginSquare = original;
+                result.OriginFile = original.File;
+                result.OriginRank = original.Rank;
+                return result;
+            }
+            throw new InvalidOperationException("No piece can make this move");
+        }
+
+        public static Move ValidateBishopMove(Move move, BoardSetup board, 
+            PieceType piece = PieceType.Bishop)
+        {
+            var rank = move.TargetSquare.Rank - 1;
+            var ifile = (int)move.TargetSquare.File - 1;
+            Color color = board.IsWhiteMove ? Color.White : Color.Black;
+            var targetPieceNotKing = board[move.TargetSquare]?.PieceType != PieceType.King;
+            Square original = null;
+            for (int f = 0; f < 8; f++)
+            {
+                for (int r = 0; r < 8; r++)
+                {
+                    if (board[f, r]?.PieceType == piece
+                        && board[f, r]?.Color == color
+                        && Math.Abs(ifile - f) == Math.Abs(rank - r) 
+                        && targetPieceNotKing
+                        && (move.OriginRank == null || move.OriginRank == (r + 1))
+                        && (move.OriginFile == null || move.OriginFile == (File)(f + 1)))
+                    {
+                        int pathLenght = Math.Abs(ifile - f);
+                        int df = Math.Sign(ifile - f);
+                        int dr = Math.Sign(rank - r);
+                        bool freePath = true;
+                        for (int i=1; i<pathLenght; i++)
+                        {
+                            if (board[f + df * i, r + dr * i] != null)
+                            {
+                                freePath = false;
+                                break;
+                            }
+                        } 
+                        if (freePath == true && original == null)
                         {
                             original = new Square((File)(f + 1), r + 1);
                         }
