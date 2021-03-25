@@ -30,16 +30,29 @@ namespace pgn.Data
 
         public static Move ValidateMove(this BoardSetup board, Move move)
         {
-            switch (move.Piece)
+            if (move.Type == MoveType.CastleKingSide || move.Type == MoveType.CastleQueenSide)
             {
-                case PieceType.Pawn:
-                    return MoveHelper.ValidatePawnMove(move, board);
-                case PieceType.Knight:
-                    return MoveHelper.ValidateKnightMove(move, board);
-                case PieceType.Bishop:
-                    return MoveHelper.ValidateBishopMove(move, board);
-                default:
-                    return null;
+
+            }
+            else
+            {
+                switch (move.Piece)
+                {
+                    case PieceType.Pawn:
+                        return MoveHelper.ValidatePawnMove(move, board);
+                    case PieceType.Knight:
+                        return MoveHelper.ValidateKnightMove(move, board);
+                    case PieceType.Bishop:
+                        return MoveHelper.ValidateBishopMove(move, board);
+                    case PieceType.Rook:
+                        return MoveHelper.ValidateRookMove(move, board);
+                    case PieceType.Queen:
+                        return MoveHelper.ValidateQueenMove(move, board);
+                    case PieceType.King:
+                        return MoveHelper.ValidateKingMove(move, board);
+                    default:
+                        return null;
+                }
             }
         }
     }

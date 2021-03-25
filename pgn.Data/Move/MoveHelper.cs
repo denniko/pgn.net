@@ -58,12 +58,23 @@ namespace ilf.pgn.Data
             throw new InvalidOperationException("No piece can make this move");
         }
 
+        public static Move ValidateCastle(Move move, BoardSetup board, bool kingSide)
+        {
+            Color color = board.IsWhiteMove ? Color.White : Color.Black;
+
+            var rank = move.TargetSquare.Rank - 1;
+            var ifile = (int)move.TargetSquare.File - 1;
+            int df = kingSide ? 1 : -1;
+
+        }
+
         public static Move ValidateKnightMove(Move move, BoardSetup board)
         {
             var rank = move.TargetSquare.Rank - 1;
             var ifile = (int)move.TargetSquare.File - 1;
             Color color = board.IsWhiteMove ? Color.White : Color.Black;
-            var targetPieceNotKing = board[move.TargetSquare]?.PieceType != PieceType.King;
+            var targetPieceNotKing = board[move.TargetSquare]?.PieceType != PieceType.King
+                && board[move.TargetSquare]?.Color != color;
             Square original = null;
             for (int f = 0; f < 8; f++)
             {
@@ -96,13 +107,60 @@ namespace ilf.pgn.Data
             throw new InvalidOperationException("No piece can make this move");
         }
 
-        public static Move ValidateBishopMove(Move move, BoardSetup board, 
-            PieceType piece = PieceType.Bishop)
+        public static Move ValidateQueenMove(Move move, BoardSetup board)
+        {
+            var asRook = ValidatePieceMove(move, board, PieceType.Queen, PieceType.Rook);
+            var asBishop = ValidatePieceMove(move, board, PieceType.Queen, PieceType.Bishop);
+            if (asBishop == null && asRook == null)
+                throw new InvalidOperationException("No piece can make this move");
+            else
+                return asRook ?? asBishop;
+        }
+
+        public static Move ValidateRookMove(Move move, BoardSetup board)
+        {
+            var asRook = ValidatePieceMove(move, board, PieceType.Rook, PieceType.Rook);
+            if (asRook == null)
+                throw new InvalidOperationException("No piece can make this move");
+            else
+                return asRook;
+        }
+
+        public static Move ValidateBishopMove(Move move, BoardSetup board)
+        {
+            var asBishop = ValidatePieceMove(move, board, PieceType.Bishop, PieceType.Bishop);
+            if (asBishop == null)
+                throw new InvalidOperationException("No piece can make this move");
+            else
+                return asBishop;
+        }
+
+        public static Move ValidateKingMove(Move move, BoardSetup board)
+        {
+            var asKing = ValidatePieceMove(move, board, PieceType.King, PieceType.King);
+            if (asKing == null)
+                throw new InvalidOperationException("No piece can make this move");
+            else
+                return asKing;
+        }
+
+        static Move ValidatePieceMove(Move move, BoardSetup board,
+            PieceType piece, PieceType pieceType)
         {
             var rank = move.TargetSquare.Rank - 1;
             var ifile = (int)move.TargetSquare.File - 1;
             Color color = board.IsWhiteMove ? Color.White : Color.Black;
-            var targetPieceNotKing = board[move.TargetSquare]?.PieceType != PieceType.King;
+            var targetPieceNotKing = board[move.TargetSquare]?.PieceType != PieceType.King 
+                && board[move.TargetSquare]?.Color != color;
+            Func<int, int, bool> pieceCondition;
+            if (pieceType == PieceType.Bishop)
+                pieceCondition = (f, r) => Math.Abs(ifile - f) == Math.Abs(rank - r);
+            else if (pieceType == PieceType.Rook)
+                pieceCondition = (f, r) => (ifile == f || rank == r);
+            else if (pieceType == PieceType.King)
+                pieceCondition = (f, r) => Math.Abs(ifile - f) <= 1 && Math.Abs(rank - r) <= 1;
+            else
+                throw new InvalidOperationException("Invalid piece was passed to func");
             Square original = null;
             for (int f = 0; f < 8; f++)
             {
@@ -110,7 +168,7 @@ namespace ilf.pgn.Data
                 {
                     if (board[f, r]?.PieceType == piece
                         && board[f, r]?.Color == color
-                        && Math.Abs(ifile - f) == Math.Abs(rank - r) 
+                        && pieceCondition(f, r)
                         && targetPieceNotKing
                         && (move.OriginRank == null || move.OriginRank == (r + 1))
                         && (move.OriginFile == null || move.OriginFile == (File)(f + 1)))
@@ -119,14 +177,14 @@ namespace ilf.pgn.Data
                         int df = Math.Sign(ifile - f);
                         int dr = Math.Sign(rank - r);
                         bool freePath = true;
-                        for (int i=1; i<pathLenght; i++)
+                        for (int i = 1; i < pathLenght; i++)
                         {
                             if (board[f + df * i, r + dr * i] != null)
                             {
                                 freePath = false;
                                 break;
                             }
-                        } 
+                        }
                         if (freePath == true && original == null)
                         {
                             original = new Square((File)(f + 1), r + 1);
@@ -146,7 +204,7 @@ namespace ilf.pgn.Data
                 result.OriginRank = original.Rank;
                 return result;
             }
-            throw new InvalidOperationException("No piece can make this move");
+            return null;
         }
     }
 }
