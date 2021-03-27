@@ -58,14 +58,59 @@ namespace ilf.pgn.Data
             throw new InvalidOperationException("No piece can make this move");
         }
 
-        public static Move ValidateCastle(Move move, BoardSetup board, bool kingSide)
+        public static Move[] ValidateCastle(Move move, BoardSetup board)
         {
+            // Не проверяются битые поля на пути короля и то что ладья та самая
+            bool kingSide = move.Type == MoveType.CastleKingSide;
             Color color = board.IsWhiteMove ? Color.White : Color.Black;
-
-            var rank = move.TargetSquare.Rank - 1;
-            var ifile = (int)move.TargetSquare.File - 1;
+            if (color == Color.White && (kingSide == true && board.CanWhiteCastleKingSide == false
+                || kingSide == false && board.CanWhiteCastleQueenSide == false)
+                || color == Color.Black && (kingSide == true && board.CanBlackCastleKingSide == false
+                || kingSide == false && board.CanBlackCastleQueenSide == false))
+            {
+                throw new InvalidOperationException("This castling is no longer possible");
+            }
             int df = kingSide ? 1 : -1;
-
+            int rank = board.IsWhiteMove ? 0 : 7;
+            for (int f = 0; f < 8; f++)
+            {
+                if (board[f, rank]?.PieceType == PieceType.King && board[f, rank]?.Color == color)
+                {
+                    for (int i = 1; i < 6; i++)
+                    {
+                        int nf = f + i * df;
+                        if (nf < 0 || nf > 7)
+                            break;
+                        if (board[nf, rank]?.PieceType == PieceType.Rook 
+                            && board[nf, rank]?.Color == color)
+                        {
+                            var km = new Move();
+                            km.Piece = PieceType.King;
+                            km.Type = MoveType.Simple;
+                            km.OriginSquare = new Square((File)(f + 1), rank + 1);
+                            km.OriginFile = km.OriginSquare.File;
+                            km.OriginRank = km.OriginSquare.Rank;
+                            km.TargetSquare = kingSide ? new Square(File.G, rank) : new Square(File.C, rank);
+                            km.TargetFile = km.TargetSquare.File;
+                            var rm = new Move();
+                            rm.Piece = PieceType.Rook;
+                            rm.Type = MoveType.Simple;
+                            rm.OriginSquare = new Square((File)(nf + 1), rank + 1);
+                            rm.OriginFile = rm.OriginSquare.File;
+                            rm.OriginRank = rm.OriginSquare.Rank;
+                            rm.TargetSquare = kingSide ? new Square(File.F, rank) : new Square(File.D, rank);
+                            rm.TargetFile = rm.TargetSquare.File;
+                            return new[] { km, rm };
+                        }
+                        else if (board[nf, rank] != null)
+                        {
+                            throw new InvalidOperationException("A figure interferes with castling");
+                        }
+                    }
+                    break;
+                }
+            }
+            throw new InvalidOperationException("No castling rook found");
         }
 
         public static Move ValidateKnightMove(Move move, BoardSetup board)
@@ -150,7 +195,7 @@ namespace ilf.pgn.Data
             var rank = move.TargetSquare.Rank - 1;
             var ifile = (int)move.TargetSquare.File - 1;
             Color color = board.IsWhiteMove ? Color.White : Color.Black;
-            var targetPieceNotKing = board[move.TargetSquare]?.PieceType != PieceType.King 
+            var targetPieceNotKing = board[move.TargetSquare]?.PieceType != PieceType.King
                 && board[move.TargetSquare]?.Color != color;
             Func<int, int, bool> pieceCondition;
             if (pieceType == PieceType.Bishop)

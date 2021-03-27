@@ -14,11 +14,17 @@ namespace pgn.Data
             foreach (var move in game.MoveText.GetMoves())
             {
                 cnt++;
-                var vmove = board.ValidateMove(move);
-                if (vmove != null)
+                var vmoves = board.ValidateMove(move);
+                if (vmoves != null)
                 {
-                    board[vmove.TargetSquare] = board[vmove.OriginSquare];
-                    board[vmove.OriginSquare] = null;
+                    foreach (var vmove in vmoves)
+                    {
+                        if (vmove.TargetSquare != null)
+                        {
+                            board[vmove.TargetSquare] = board[vmove.OriginSquare];
+                        }
+                        board[vmove.OriginSquare] = null;
+                    }
                 }
                 board.IsWhiteMove = !board.IsWhiteMove;
                 if (cnt >= halfmove)
@@ -28,28 +34,28 @@ namespace pgn.Data
             return board;
         }
 
-        public static Move ValidateMove(this BoardSetup board, Move move)
+        public static Move[] ValidateMove(this BoardSetup board, Move move)
         {
             if (move.Type == MoveType.CastleKingSide || move.Type == MoveType.CastleQueenSide)
             {
-
+                return MoveHelper.ValidateCastle(move, board);
             }
             else
             {
                 switch (move.Piece)
                 {
                     case PieceType.Pawn:
-                        return MoveHelper.ValidatePawnMove(move, board);
+                        return new[] { MoveHelper.ValidatePawnMove(move, board) };
                     case PieceType.Knight:
-                        return MoveHelper.ValidateKnightMove(move, board);
+                        return new[] { MoveHelper.ValidateKnightMove(move, board) };
                     case PieceType.Bishop:
-                        return MoveHelper.ValidateBishopMove(move, board);
+                        return new[] { MoveHelper.ValidateBishopMove(move, board) };
                     case PieceType.Rook:
-                        return MoveHelper.ValidateRookMove(move, board);
+                        return new[] { MoveHelper.ValidateRookMove(move, board) };
                     case PieceType.Queen:
-                        return MoveHelper.ValidateQueenMove(move, board);
+                        return new[] { MoveHelper.ValidateQueenMove(move, board) };
                     case PieceType.King:
-                        return MoveHelper.ValidateKingMove(move, board);
+                        return new[] { MoveHelper.ValidateKingMove(move, board) };
                     default:
                         return null;
                 }
