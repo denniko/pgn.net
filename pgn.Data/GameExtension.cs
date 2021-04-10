@@ -1,16 +1,17 @@
 ﻿using ilf.pgn.Data;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace pgn.Data
 {
     public static class GameExtension
     {
-        public static BoardSetup GoToMove(this Game game, int halfmove = int.MaxValue)
+        public static GoToMoveResult GoToMove(this Game game, int halfmove = int.MaxValue)
         {
             var board = game.BoardSetup.Clone();
             int cnt = 0;
+            var sbMoves = new StringBuilder();
             foreach (var move in game.MoveText.GetMoves())
             {
                 cnt++;
@@ -25,13 +26,17 @@ namespace pgn.Data
                         }
                         board[vmove.OriginSquare] = null;
                     }
+                    sbMoves.Append(vmoves.First().ToUciString());
                 }
                 board.IsWhiteMove = !board.IsWhiteMove;
                 if (cnt >= halfmove)
                     break;
             }
 
-            return board;
+            return new GoToMoveResult
+            {
+                Setup = board,
+            };
         }
 
         public static Move[] ValidateMove(this BoardSetup board, Move move)
@@ -61,5 +66,11 @@ namespace pgn.Data
                 }
             }
         }
+    }
+
+    public class GoToMoveResult
+    {
+        public BoardSetup Setup { get; set; }
+        public string UciMoves { get; set; }
     }
 }
