@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace pgn.Data
+namespace ilf.pgn.Data
 {
     public static class GameExtension
     {
@@ -37,7 +37,8 @@ namespace pgn.Data
             return new GoToMoveResult
             {
                 Setup = board,
-                UciMoves = sbMoves.ToString()
+                UciMoves = sbMoves.ToString(),
+                HalfMove = cnt
             };
         }
 
@@ -74,5 +75,6 @@ namespace pgn.Data
     {
         public BoardSetup Setup { get; set; }
         public string UciMoves { get; set; }
+        public int HalfMove { get; set; }
     }
 }
