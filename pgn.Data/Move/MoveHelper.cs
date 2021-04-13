@@ -90,7 +90,7 @@ namespace ilf.pgn.Data
                             km.OriginSquare = new Square((File)(f + 1), rank + 1);
                             km.OriginFile = km.OriginSquare.File;
                             km.OriginRank = km.OriginSquare.Rank;
-                            km.TargetSquare = kingSide ? new Square(File.G, rank) : new Square(File.C, rank);
+                            km.TargetSquare = kingSide ? new Square(File.G, rank + 1) : new Square(File.C, rank + 1);
                             km.TargetFile = km.TargetSquare.File;
                             var rm = new Move();
                             rm.Piece = PieceType.Rook;
@@ -98,7 +98,7 @@ namespace ilf.pgn.Data
                             rm.OriginSquare = new Square((File)(nf + 1), rank + 1);
                             rm.OriginFile = rm.OriginSquare.File;
                             rm.OriginRank = rm.OriginSquare.Rank;
-                            rm.TargetSquare = kingSide ? new Square(File.F, rank) : new Square(File.D, rank);
+                            rm.TargetSquare = kingSide ? new Square(File.F, rank + 1) : new Square(File.D, rank + 1);
                             rm.TargetFile = rm.TargetSquare.File;
                             return new[] { km, rm };
                         }

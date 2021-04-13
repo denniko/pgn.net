@@ -174,7 +174,7 @@ namespace ilf.pgn.Data
             return MoveFormatter.Default.Format(this);
         }
 
-        public override string ToUciString()
+        public string ToUciString()
         {
             return $"{OriginFile.Value.ToString().ToLowerInvariant()}{OriginRank.Value}" 
                 + $"{TargetSquare.File.ToString().ToLowerInvariant()}{TargetSquare.Rank}";

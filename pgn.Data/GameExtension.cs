@@ -27,6 +27,7 @@ namespace pgn.Data
                         board[vmove.OriginSquare] = null;
                     }
                     sbMoves.Append(vmoves.First().ToUciString());
+                    sbMoves.Append(" ");
                 }
                 board.IsWhiteMove = !board.IsWhiteMove;
                 if (cnt >= halfmove)
@@ -36,6 +37,7 @@ namespace pgn.Data
             return new GoToMoveResult
             {
                 Setup = board,
+                UciMoves = sbMoves.ToString()
             };
         }
 
