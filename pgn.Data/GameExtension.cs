@@ -7,7 +7,7 @@ namespace ilf.pgn.Data
 {
     public static class GameExtension
     {
-        public static GoToMoveResult GoToMove(this Game game, int halfmove = int.MaxValue)
+        public static Position GoToMove(this Game game, int halfmove = int.MaxValue)
         {
             var board = game.BoardSetup.Clone();
             int cnt = 0;
@@ -34,9 +34,9 @@ namespace ilf.pgn.Data
                     break;
             }
 
-            return new GoToMoveResult
+            return new Position
             {
-                Setup = board,
+                Board = board,
                 UciMoves = sbMoves.ToString(),
                 HalfMove = cnt
             };
@@ -69,12 +69,57 @@ namespace ilf.pgn.Data
                 }
             }
         }
+
+        public static WorthInPawn CalcWorthInPawns(this BoardSetup board)
+        {
+            var res = new WorthInPawn();
+            for (int f = 0; f < 8; f++)
+            {
+                for (int r = 0; r < 8; r++)
+                {
+                    var p = board[f, r];
+                    if (p == null)
+                        continue;
+                    if (p.Color == Color.White)
+                        res.White += p.PieceType.WorthInPawns();
+                    else
+                        res.Black += p.PieceType.WorthInPawns();
+                }
+            }
+            return res;
+        }
+
+        public static int WorthInPawns(this PieceType piece)
+        {
+            switch (piece)
+            {
+                case PieceType.Pawn:
+                    return 1;
+                case PieceType.Bishop:
+                case PieceType.Knight:
+                    return 3;
+                case PieceType.Rook:
+                    return 5;
+                case PieceType.Queen:
+                    return 9;
+                case PieceType.King:
+                    return 0;
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
     }
 
-    public class GoToMoveResult
+    public class Position
     {
-        public BoardSetup Setup { get; set; }
+        public BoardSetup Board { get; set; }
         public string UciMoves { get; set; }
         public int HalfMove { get; set; }
+    }
+
+    public class WorthInPawn
+    {
+        public int White { get; set; }
+        public int Black { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ilf.pgn.Data;
 using Xunit;
 
 namespace pgn.Data.Test
@@ -29,7 +30,11 @@ namespace pgn.Data.Test
 
             // Get the first game from the file and print it to the console.
             var game = gameDb.Games.First();
-            var board = game.GoToMove();
+            var pos = game.GoToMove();
+            Assert.Equal(19, pos.HalfMove);
+            var worth = pos.Board.CalcWorthInPawns();
+            Assert.Equal(38, worth.White);
+            Assert.Equal(37, worth.Black);
             Console.WriteLine(game);
         }
     }
