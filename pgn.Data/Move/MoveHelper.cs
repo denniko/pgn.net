@@ -120,13 +120,15 @@ namespace ilf.pgn.Data
             Color color = board.IsWhiteMove ? Color.White : Color.Black;
             var targetPieceNotKing = board[move.TargetSquare]?.PieceType != PieceType.King
                 && board[move.TargetSquare]?.Color != color;
+            Func<int, int, bool> pieceCondition = (f, r) => Math.Abs(Math.Abs(ifile - f) - Math.Abs(rank - r)) == 1
+                && Math.Max(Math.Abs(ifile - f), Math.Abs(rank - r)) == 2;
             Square original = null;
             for (int f = 0; f < 8; f++)
             {
                 for (int r = 0; r < 8; r++)
                 {
                     if (board[f, r]?.PieceType == PieceType.Knight && board[f, r]?.Color == color
-                        && Math.Abs(Math.Abs(ifile - f) - Math.Abs(rank - r)) == 1 && targetPieceNotKing
+                        && pieceCondition(f, r) && targetPieceNotKing
                         && (move.OriginRank == null || move.OriginRank == (r + 1))
                         && (move.OriginFile == null || move.OriginFile == (File)(f + 1)))
                     {
@@ -230,13 +232,16 @@ namespace ilf.pgn.Data
                                 break;
                             }
                         }
-                        if (freePath == true && original == null)
+                        if (freePath == true)
                         {
-                            original = new Square((File)(f + 1), r + 1);
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException("More than one piece can make a given move");
+                            if (original == null)
+                            {
+                                original = new Square((File)(f + 1), r + 1);
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException("More than one piece can make a given move");
+                            }
                         }
                     }
                 }

@@ -210,5 +210,61 @@ namespace ilf.pgn.Data
             }
             return b;
         }
+
+        /// <summary>
+        /// Start position for classic chess
+        /// </summary>
+        /// <returns></returns>
+        public static BoardSetup CreateDefault()
+        {
+            var b = new BoardSetup();
+
+            b[File.A, 1] = Piece.WhiteRook;
+            b[File.B, 1] = Piece.WhiteKnight;
+            b[File.C, 1] = Piece.WhiteBishop;
+            b[File.D, 1] = Piece.WhiteQueen;
+            b[File.E, 1] = Piece.WhiteKing;
+            b[File.F, 1] = Piece.WhiteBishop;
+            b[File.G, 1] = Piece.WhiteKnight;
+            b[File.H, 1] = Piece.WhiteRook;
+
+            b[File.A, 8] = Piece.BlackRook;
+            b[File.B, 8] = Piece.BlackKnight;
+            b[File.C, 8] = Piece.BlackBishop;
+            b[File.D, 8] = Piece.BlackQueen;
+            b[File.E, 8] = Piece.BlackKing;
+            b[File.F, 8] = Piece.BlackBishop;
+            b[File.G, 8] = Piece.BlackKnight;
+            b[File.H, 8] = Piece.BlackRook;
+
+            b[File.A, 2] = Piece.WhitePawn;
+            b[File.B, 2] = Piece.WhitePawn;
+            b[File.C, 2] = Piece.WhitePawn;
+            b[File.D, 2] = Piece.WhitePawn;
+            b[File.E, 2] = Piece.WhitePawn;
+            b[File.F, 2] = Piece.WhitePawn;
+            b[File.G, 2] = Piece.WhitePawn;
+            b[File.H, 2] = Piece.WhitePawn;
+
+            b[File.A, 7] = Piece.BlackPawn;
+            b[File.B, 7] = Piece.BlackPawn;
+            b[File.C, 7] = Piece.BlackPawn;
+            b[File.D, 7] = Piece.BlackPawn;
+            b[File.E, 7] = Piece.BlackPawn;
+            b[File.F, 7] = Piece.BlackPawn;
+            b[File.G, 7] = Piece.BlackPawn;
+            b[File.H, 7] = Piece.BlackPawn;
+
+            b.CanBlackCastleKingSide = true;
+            b.CanBlackCastleQueenSide = true;
+            b.CanWhiteCastleKingSide = true;
+            b.CanWhiteCastleQueenSide = true;
+            b.EnPassantSquare = null;
+            b.FullMoveCount = 1;
+            b.HalfMoveClock = 1;
+            b.IsWhiteMove = true;
+
+            return b;
+        }
     }
 }

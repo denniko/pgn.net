@@ -9,6 +9,10 @@ namespace ilf.pgn.Data
     {
         public static Position GoToMove(this Game game, int halfmove = int.MaxValue)
         {
+            if (game.BoardSetup == null && game.Tags.ContainsKey("FEN") == false)
+            {
+                game.BoardSetup = BoardSetup.CreateDefault();
+            }
             var board = game.BoardSetup.Clone();
             int cnt = 0;
             var sbMoves = new StringBuilder();
@@ -24,7 +28,10 @@ namespace ilf.pgn.Data
                         {
                             board[vmove.TargetSquare] = board[vmove.OriginSquare];
                         }
-                        board[vmove.OriginSquare] = null;
+                        if (vmove.TargetSquare != vmove.OriginSquare)
+                        {
+                            board[vmove.OriginSquare] = null;
+                        }
                     }
                     sbMoves.Append(vmoves.First().ToUciString());
                     sbMoves.Append(" ");
