@@ -115,6 +115,23 @@ namespace ilf.pgn.Data
                     throw new InvalidOperationException();
             }
         }
+
+        public static string ConvertUciMoveToPgn(this Game game, string move)
+        {
+            var pos = game.GoToMove();
+            var from = new Square((File)Enum.Parse(typeof(File), move[0].ToString(), true), Convert.ToInt32(move[1]));
+            var to = new Square((File)Enum.Parse(typeof(File), move[2].ToString(), true), Convert.ToInt32(move[3]));
+            var pieceFrom = pos.Board[from];
+            if (pieceFrom.PieceType == PieceType.Pawn)
+            {
+                if (from.File == to.File) return to.ToString();
+                return from.File.ToString() + "x" + to.ToString();
+            }
+            else
+            {
+                return pieceFrom.ToString() + from.ToString() + to.ToString();
+            }
+        }
     }
 
     public class Position
