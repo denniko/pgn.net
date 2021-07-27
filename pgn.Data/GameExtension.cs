@@ -119,8 +119,10 @@ namespace ilf.pgn.Data
         public static string ConvertUciMoveToPgn(this Game game, string move)
         {
             var pos = game.GoToMove();
-            var from = new Square((File)Enum.Parse(typeof(File), move[0].ToString(), true), Convert.ToInt32(move[1]));
-            var to = new Square((File)Enum.Parse(typeof(File), move[2].ToString(), true), Convert.ToInt32(move[3]));
+            var from = new Square((File)Enum.Parse(typeof(File), move[0].ToString(), true), 
+                Convert.ToInt32(move[1].ToString()));
+            var to = new Square((File)Enum.Parse(typeof(File), move[2].ToString(), true), 
+                Convert.ToInt32(move[3].ToString()));
             var pieceFrom = pos.Board[from];
             if (pieceFrom.PieceType == PieceType.Pawn)
             {
@@ -129,7 +131,7 @@ namespace ilf.pgn.Data
             }
             else
             {
-                return pieceFrom.ToString() + from.ToString() + to.ToString();
+                return ((char)pieceFrom.PieceType).ToString() + from.ToString() + to.ToString();
             }
         }
     }
