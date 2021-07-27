@@ -33,8 +33,8 @@ type Debug() =
         config.AddTarget("console", debuggerTarget)
         config.LoggingRules.Add(debuggerTargetRule)
 
-        LogManager.Configuration <- config
-        LogManager.Configuration.Reload()
+        //LogManager.Configuration <- config
+        //LogManager.Configuration.Reload()
         |> ignore
 
     member val DebugMode : DebugMode = DebugMode.Off with get, set
