@@ -22,18 +22,33 @@ namespace ilf.pgn.Data
                 var vmoves = board.ValidateMove(move);
                 if (vmoves != null)
                 {
-                    foreach (var vmove in vmoves)
+                    if (move.Type == MoveType.CastleKingSide || move.Type == MoveType.CastleQueenSide)
                     {
-                        if (vmove.TargetSquare != null)
-                        {
-                            board[vmove.TargetSquare] = board[vmove.OriginSquare];
-                        }
-                        if (vmove.TargetSquare != vmove.OriginSquare)
-                        {
-                            board[vmove.OriginSquare] = null;
-                        }
+                        var p0 = board[vmoves[0].OriginSquare];
+                        var p1 = board[vmoves[1].OriginSquare];
+                        board[vmoves[0].OriginSquare] = null;
+                        board[vmoves[1].OriginSquare] = null;
+                        board[vmoves[0].TargetSquare] = p0;
+                        board[vmoves[1].TargetSquare] = p1;
+                        var king = vmoves.Single(vm => vm.Piece == PieceType.King);
+                        var rook = vmoves.Single(vm => vm.Piece == PieceType.Rook);
+                        sbMoves.Append(king.OriginSquare.ToString() + rook.OriginSquare.ToString());
                     }
-                    sbMoves.Append(vmoves.First().ToUciString());
+                    else
+                    {
+                        foreach (var vmove in vmoves)
+                        {
+                            if (vmove.TargetSquare != null)
+                            {
+                                board[vmove.TargetSquare] = board[vmove.OriginSquare];
+                            }
+                            if (vmove.TargetSquare != vmove.OriginSquare)
+                            {
+                                board[vmove.OriginSquare] = null;
+                            }
+                        }
+                        sbMoves.Append(vmoves.First().ToUciString());
+                    }
                     sbMoves.Append(" ");
                 }
                 board.IsWhiteMove = !board.IsWhiteMove;
