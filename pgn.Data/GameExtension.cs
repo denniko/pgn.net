@@ -142,7 +142,7 @@ namespace ilf.pgn.Data
             if (pieceFrom.PieceType == PieceType.Pawn)
             {
                 if (from.File == to.File) return to.ToString();
-                return from.File.ToString() + "x" + to.ToString();
+                return from.File.ToString().ToLower() + "x" + to.ToString();
             }
             else
             {
