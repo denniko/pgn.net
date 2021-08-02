@@ -9,8 +9,10 @@ namespace ilf.pgn.Data
     {
         public static Position GoToMove(this Game game, int halfmove = int.MaxValue)
         {
+            bool chess960 = true;
             if (game.BoardSetup == null && game.Tags.ContainsKey("FEN") == false)
             {
+                chess960 = false;
                 game.BoardSetup = BoardSetup.CreateDefault();
             }
             var board = game.BoardSetup.Clone();
@@ -30,9 +32,22 @@ namespace ilf.pgn.Data
                         board[vmoves[1].OriginSquare] = null;
                         board[vmoves[0].TargetSquare] = p0;
                         board[vmoves[1].TargetSquare] = p1;
-                        var king = vmoves.Single(vm => vm.Piece == PieceType.King);
-                        var rook = vmoves.Single(vm => vm.Piece == PieceType.Rook);
-                        sbMoves.Append(king.OriginSquare.ToString() + rook.OriginSquare.ToString());
+                        if (chess960)
+                        {
+                            var king = vmoves.Single(vm => vm.Piece == PieceType.King);
+                            var rook = vmoves.Single(vm => vm.Piece == PieceType.Rook);
+                            sbMoves.Append(king.OriginSquare.ToString() + rook.OriginSquare.ToString());
+                        } 
+                        else
+                        {
+                            string from = board.IsWhiteMove ? "e1" : "e8";
+                            string to;
+                            if (move.Type == MoveType.CastleKingSide)
+                                to = board.IsWhiteMove ? "g1" : "g8";
+                            else
+                                to = board.IsWhiteMove ? "c1" : "c8";
+                            sbMoves.Append(from + to);
+                        }
                     }
                     else
                     {
