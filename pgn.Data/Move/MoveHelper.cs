@@ -220,9 +220,9 @@ namespace ilf.pgn.Data
                         && (move.OriginRank == null || move.OriginRank == (r + 1))
                         && (move.OriginFile == null || move.OriginFile == (File)(f + 1)))
                     {
-                        int pathLenght = Math.Abs(ifile - f);
                         int df = Math.Sign(ifile - f);
                         int dr = Math.Sign(rank - r);
+                        int pathLenght = df == 0 ? Math.Abs(rank - r) : Math.Abs(ifile - f);
                         bool freePath = true;
                         for (int i = 1; i < pathLenght; i++)
                         {
