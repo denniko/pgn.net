@@ -154,15 +154,17 @@ namespace ilf.pgn.Data
             var to = new Square((File)Enum.Parse(typeof(File), move[2].ToString(), true), 
                 Convert.ToInt32(move[3].ToString()));
             var pieceFrom = pos.Board[from];
+            var pieceTo = pos.Board[to];
             if (pieceFrom.PieceType == PieceType.Pawn)
             {
                 if (from.File == to.File) return to.ToString();
                 return from.File.ToString().ToLower() + "x" + to.ToString();
             }
-            else
+            else if (pieceFrom.PieceType == PieceType.King && pieceTo?.PieceType == PieceType.Rook) 
             {
-                return ((char)pieceFrom.PieceType).ToString() + from.ToString() + to.ToString();
+                return Convert.ToInt32(from.File) - Convert.ToInt32(to.File) > 0 ? "0-0-0" : "0-0";
             }
+            return ((char)pieceFrom.PieceType).ToString() + from.ToString() + to.ToString();
         }
     }
 
